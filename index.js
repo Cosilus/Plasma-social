@@ -1,13 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 
-const corsOptions = {
-  origin: 'https://plasmareviewer.netlify.app',  
-  optionsSuccessStatus: 200 
-};
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const corsOptions = {
+  origin: 'https://plasmareviewer.netlify.app',
+  optionsSuccessStatus: 200 
+};
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -39,7 +39,7 @@ app.post('/posts', (req, res) => {
 app.post('/posts/:id/like', (req, res) => {
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
-  if (!post) return res.status(404).send('Post not found');
+  if (!post) return res.status(404).json({ error: 'Post not found' });
 
   post.likes++;
   res.json(post);
@@ -48,12 +48,12 @@ app.post('/posts/:id/like', (req, res) => {
 app.delete('/posts/:id/like', (req, res) => {
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
-  if (!post) return res.status(404).send('Post not found');
+  if (!post) return res.status(404).json({ error: 'Post not found' });
 
   post.likes = Math.max(0, post.likes - 1);
   res.json(post);
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server launched on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
