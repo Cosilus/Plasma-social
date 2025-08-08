@@ -12,6 +12,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors(corsOptions));
 app.use(express.json());
 
+let posts = [];
+
 function readPosts() {
   try {
     const data = fs.readFileSync(postsFile, 'utf-8');
