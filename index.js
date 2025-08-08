@@ -1,10 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 
+const corsOptions = {
+  origin: 'https://plasmareviewer.netlify.app',  
+  optionsSuccessStatus: 200 
+};
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const posts = [];
