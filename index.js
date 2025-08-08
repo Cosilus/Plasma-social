@@ -7,6 +7,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+let posts = [];
+
 app.get('/posts', (req, res) => {
   res.json(posts);
 });
@@ -34,7 +36,7 @@ app.post('/posts/:id/like', (req, res) => {
   const post = posts.find(p => p.id === id);
   if (!post) return res.status(404).send('Post not found');
 
-  post.likes = (post.likes || 0) + 1;
+  post.likes++;
   res.json(post);
 });
 
@@ -43,11 +45,10 @@ app.delete('/posts/:id/like', (req, res) => {
   const post = posts.find(p => p.id === id);
   if (!post) return res.status(404).send('Post not found');
 
-  post.likes = Math.max(0, (post.likes || 0) - 1);
+  post.likes = Math.max(0, post.likes - 1);
   res.json(post);
 });
 
-
 app.listen(PORT, () => {
-  console.log(`🚀 Server launched ${PORT}`);
+  console.log(`🚀 Server launched on port ${PORT}`);
 });
