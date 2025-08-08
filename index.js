@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 
 const corsOptions = {
   origin: 'https://plasmareviewer.netlify.app',  
@@ -12,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors(corsOptions));
 app.use(express.json());
 
-let posts = [];
+const postsFile = path.join(__dirname, 'posts.json');
 
 function readPosts() {
   try {
@@ -26,6 +28,9 @@ function readPosts() {
 function writePosts(posts) {
   fs.writeFileSync(postsFile, JSON.stringify(posts, null, 2));
 }
+
+// Charge les posts au démarrage
+let posts = readPosts();
 
 app.get('/posts', (req, res) => {
   res.json(posts);
@@ -46,6 +51,7 @@ app.post('/posts', (req, res) => {
   };
 
   posts.push(newPost);
+  writePosts(posts);
   res.status(201).json(newPost);
 });
 
@@ -55,6 +61,7 @@ app.post('/posts/:id/like', (req, res) => {
   if (!post) return res.status(404).send('Post not found');
 
   post.likes++;
+  writePosts(posts);
   res.json(post);
 });
 
@@ -64,6 +71,7 @@ app.delete('/posts/:id/like', (req, res) => {
   if (!post) return res.status(404).send('Post not found');
 
   post.likes = Math.max(0, post.likes - 1);
+  writePosts(posts);
   res.json(post);
 });
 
