@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-let posts = [];
+const posts = [];
 
 app.get('/posts', (req, res) => {
   res.json(posts);
