@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mini Réseau Social</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Mini Réseau Social</h1>
+  <div class="form">
+    <input type="text" id="author" placeholder="Auteur (optionnel)" maxlength="50" />
+    <textarea id="content" placeholder="Écris ton message ici..." maxlength="5000"></textarea>
+    <div><span id="charCounter">0 / 5000</span></div>
+    <button id="postBtn">Publier</button>
+  </div>
+  <div>
+    <label for="sortSelect">Trier par :</label>
+    <select id="sortSelect">
+      <option value="new">Les plus récents</option>
+      <option value="top">Les plus aimés</option>
+    </select>
+  </div>
+  <h2>Fil d'actualité (<span id="countInfo">0 posts</span>)</h2>
+  <div id="feed"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

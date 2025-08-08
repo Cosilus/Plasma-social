@@ -1,0 +1,47 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 0 10px;
+  background: #f9f9f9;
+  color: #333;
+}
+h1, h2 {
+  text-align: center;
+}
+.form {
+  margin-bottom: 20px;
+}
+input[type="text"], textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+textarea {
+  height: 100px;
+  resize: vertical;
+}
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.post {
+  background: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+.meta-row {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+.content {
+  font-size: 16px;
+  white-space: pre-wrap;
+}
