@@ -3,9 +3,11 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
+const postsFile = path.join(__dirname, 'posts.json');
+
 const corsOptions = {
-  origin: 'https://plasmareviewer.netlify.app',  
-  optionsSuccessStatus: 200 
+  origin: 'https://plasmareviewer.netlify.app',
+  optionsSuccessStatus: 200
 };
 
 const app = express();
@@ -13,8 +15,6 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors(corsOptions));
 app.use(express.json());
-
-const postsFile = path.join(__dirname, 'posts.json');
 
 function readPosts() {
   try {
@@ -29,15 +29,15 @@ function writePosts(posts) {
   fs.writeFileSync(postsFile, JSON.stringify(posts, null, 2));
 }
 
-// Charge les posts au démarrage
-let posts = readPosts();
-
 app.get('/posts', (req, res) => {
+  const posts = readPosts();
   res.json(posts);
 });
 
 app.post('/posts', (req, res) => {
+  const posts = readPosts();
   const { author, content } = req.body;
+
   if (!content) {
     return res.status(400).json({ error: 'Content is required' });
   }
@@ -52,26 +52,33 @@ app.post('/posts', (req, res) => {
 
   posts.push(newPost);
   writePosts(posts);
+
   res.status(201).json(newPost);
 });
 
 app.post('/posts/:id/like', (req, res) => {
+  const posts = readPosts();
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
+
   if (!post) return res.status(404).send('Post not found');
 
   post.likes++;
   writePosts(posts);
+
   res.json(post);
 });
 
 app.delete('/posts/:id/like', (req, res) => {
+  const posts = readPosts();
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
+
   if (!post) return res.status(404).send('Post not found');
 
   post.likes = Math.max(0, post.likes - 1);
   writePosts(posts);
+
   res.json(post);
 });
 
