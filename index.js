@@ -46,6 +46,7 @@ app.post('/posts', (req, res) => {
     id: posts.length > 0 ? Math.max(...posts.map(p => p.id)) + 1 : 1,
     author: author || 'Anonyme',
     content,
+    wallet: req.body.wallet,
     createdAt: new Date(),
     likes: 0
   };
