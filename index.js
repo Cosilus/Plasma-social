@@ -35,14 +35,18 @@ app.get('/posts', async (req, res) => {
   res.json(result.rows);
 });
 
-app.post('/posts', async (req, res) => {
-  const { author, walletAddress, content } = req.body;
-  if (!author || !content) return res.status(400).json({ error: 'Author and content required' });
+app.post('/like', async (req, res) => {
+  const { postId } = req.body;
+  if (!postId) return res.status(400).json({ error: 'postId required' });
 
   const result = await pool.query(
-    'INSERT INTO posts (author, wallet_address, content) VALUES ($1, $2, $3) RETURNING *',
-    [author, walletAddress || null, content]
+    'UPDATE posts SET likes = likes + 1 WHERE id = $1 RETURNING *',
+    [parseInt(postId)]
   );
+
+  if (result.rowCount === 0) {
+    return res.status(404).json({ error: 'Post not found' });
+  }
 
   res.json(result.rows[0]);
 });
