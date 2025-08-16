@@ -1,88 +1,58 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
-
-const postsFile = path.join(__dirname, 'posts.json');
-
-const corsOptions = {
-  origin: 'https://plasmareviewer.netlify.app',
-  optionsSuccessStatus: 200
-};
+const { Pool } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
-function readPosts() {
-  try {
-    const data = fs.readFileSync(postsFile, 'utf-8');
-    return JSON.parse(data);
-  } catch (err) {
-    return [];
-  }
-}
 
-function writePosts(posts) {
-  fs.writeFileSync(postsFile, JSON.stringify(posts, null, 2));
-}
-
-app.get('/posts', (req, res) => {
-  const posts = readPosts();
-  res.json(posts);
+const pool = new Pool({
+  connectionString: "postgresql://plasma_posts_user:2OnIIceIw2jlPf6igh6KmaUdaY4JhKOG@dpg-d2gd0a0dl3ps73f6n8bg-a.oregon-postgres.render.com/plasma_posts",
+  ssl: { rejectUnauthorized: false }
 });
 
-app.post('/posts', (req, res) => {
-  const posts = readPosts();
-  const { author, content } = req.body;
 
-  if (!content) {
-    return res.status(400).json({ error: 'Content is required' });
-  }
+(async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS posts (
+      id SERIAL PRIMARY KEY,
+      author TEXT NOT NULL,
+      wallet_address TEXT,
+      content TEXT NOT NULL,
+      likes INT DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  console.log('Database ready!');
+})();
 
-  const newPost = {
-    id: posts.length > 0 ? Math.max(...posts.map(p => p.id)) + 1 : 1,
-    author: author || 'Anonyme',
-    content,
-    wallet: req.body.wallet,
-    createdAt: new Date(),
-    likes: 0
-  };
 
-  posts.push(newPost);
-  writePosts(posts);
-
-  res.status(201).json(newPost);
+app.get('/posts', async (req, res) => {
+  const result = await pool.query('SELECT * FROM posts ORDER BY created_at DESC');
+  res.json(result.rows);
 });
 
-app.post('/posts/:id/like', (req, res) => {
-  const posts = readPosts();
-  const id = parseInt(req.params.id);
-  const post = posts.find(p => p.id === id);
+app.post('/posts', async (req, res) => {
+  const { author, walletAddress, content } = req.body;
+  if (!author || !content) return res.status(400).json({ error: 'Author and content required' });
 
-  if (!post) return res.status(404).send('Post not found');
+  const result = await pool.query(
+    'INSERT INTO posts (author, wallet_address, content) VALUES ($1, $2, $3) RETURNING *',
+    [author, walletAddress || null, content]
+  );
 
-  post.likes++;
-  writePosts(posts);
-
-  res.json(post);
+  res.json(result.rows[0]);
 });
 
-app.delete('/posts/:id/like', (req, res) => {
-  const posts = readPosts();
-  const id = parseInt(req.params.id);
-  const post = posts.find(p => p.id === id);
+app.post('/like', async (req, res) => {
+  const { postId } = req.body;
+  if (!postId) return res.status(400).json({ error: 'postId required' });
 
-  if (!post) return res.status(404).send('Post not found');
-
-  post.likes = Math.max(0, post.likes - 1);
-  writePosts(posts);
-
-  res.json(post);
+  await pool.query('UPDATE posts SET likes = likes + 1 WHERE id = $1', [postId]);
+  res.sendStatus(200);
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server launched on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
