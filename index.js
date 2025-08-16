@@ -8,10 +8,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// 🔹 Config PostgreSQL
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Render Environment Variable
-  ssl: { rejectUnauthorized: false }          // obligatoire sur Render
+  connectionString: 'postgresql://plasma_posts_user:2OnIIceIw2jlPf6igh6KmaUdaY4JhKOG@dpg-d2gd0a0dl3ps73f6n8bg-a.oregon-postgres.render.com/plasma_posts',
+  ssl: { rejectUnauthorized: false }
 });
 
 (async () => {
