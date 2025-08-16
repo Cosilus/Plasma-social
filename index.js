@@ -9,6 +9,7 @@ app.use(express.json());
 
 const pool = new Pool({
   connectionString: "postgresql://plasma_posts_user:2OnIIceIw2jlPf6igh6KmaUdaY4JhKOG@dpg-d2gd0a0dl3ps73f6n8bg-a.oregon-postgres.render.com/plasma_posts",
+  ssl: { rejectUnauthorized: false } // <-- IMPORTANT
 });
 
 const initDB = async () => {
@@ -37,9 +38,7 @@ app.get("/posts", async (req, res) => {
 
 app.post("/posts", async (req, res) => {
   const { name, content, wallet } = req.body;
-  if (!name || !content || !wallet) {
-    return res.status(400).json({ error: "Missing fields" });
-  }
+  if (!name || !content || !wallet) return res.status(400).json({ error: "Missing fields" });
 
   try {
     const result = await pool.query(
@@ -55,13 +54,11 @@ app.post("/posts", async (req, res) => {
 
 app.post("/posts/:id/like", async (req, res) => {
   const { id } = req.params;
-
   try {
     const result = await pool.query(
       "UPDATE posts SET likes = likes + 1 WHERE id = $1 RETURNING *",
       [id]
     );
-
     if (result.rows.length === 0) return res.status(404).json({ error: "Post not found" });
     res.json(result.rows[0]);
   } catch (err) {
