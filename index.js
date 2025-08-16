@@ -36,8 +36,8 @@ app.get('/posts', async (req, res) => {
     const result = await pool.query('SELECT * FROM posts ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erreur récupération posts', details: err.message });
+    console.error('Erreur récupération posts:', err);
+    res.status(500).json({ error: 'Erreur chargement posts', details: err.message });
   }
 });
 
