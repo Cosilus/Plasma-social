@@ -72,7 +72,7 @@ app.post("/posts/:id/like", async (req, res) => {
   }
 });
 
-app.post("/posts/:id/unlike", async (req, res) => {
+app.delete("/posts/:id/like", async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
@@ -86,6 +86,7 @@ app.post("/posts/:id/unlike", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
