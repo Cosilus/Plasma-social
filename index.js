@@ -1,15 +1,20 @@
 import express from "express";
+import cors from "cors";
 import pkg from "pg";
 const { Pool } = pkg;
 
 const app = express();
 const PORT = 3000;
 
+app.use(cors({
+  origin: "https://plasmareviewer.netlify.app" 
+}));
+
 app.use(express.json());
 
 const pool = new Pool({
   connectionString: "postgresql://plasma_posts_user:2OnIIceIw2jlPf6igh6KmaUdaY4JhKOG@dpg-d2gd0a0dl3ps73f6n8bg-a.oregon-postgres.render.com/plasma_posts",
-  ssl: { rejectUnauthorized: false } // <-- IMPORTANT
+  ssl: { rejectUnauthorized: false } 
 });
 
 const initDB = async () => {
