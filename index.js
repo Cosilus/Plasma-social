@@ -50,19 +50,22 @@ app.get('/posts', async (req, res) => {
   }
 });
 
-app.post('/posts', async (req, res) => {
-  const { author, walletAddress, content } = req.body;
-  if (!author || !content) return res.status(400).json({ error: 'Author et content requis' });
+app.post('/like', async (req, res) => {
+  const { postId } = req.body;
+  if (!postId) return res.status(400).json({ error: 'postId requis' });
 
   try {
-    const result = await pool.query(
-      'INSERT INTO posts (author, wallet_address, content) VALUES ($1, $2, $3) RETURNING *',
-      [author, walletAddress || null, content]
-    );
+    const id = parseInt(postId, 10); // <- conversion en int
+    if (isNaN(id)) return res.status(400).json({ error: 'postId invalide' });
+
+    const result = await pool.query('UPDATE posts SET likes = likes + 1 WHERE id = $1 RETURNING *', [id]);
+
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Post introuvable' });
+
     res.json(result.rows[0]);
   } catch (err) {
-    console.error('❌ Erreur publication post:', err);
-    res.status(500).json({ error: 'Erreur publication', details: err.message });
+    console.error('❌ Erreur like post:', err);
+    res.status(500).json({ error: 'Erreur like', details: err.message });
   }
 });
 
