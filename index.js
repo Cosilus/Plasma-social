@@ -28,8 +28,14 @@ const initDB = async () => {
       likes INT DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW()
     );
-  `);
+     try {
+    await pool.query(`CREATE TABLE IF NOT EXISTS posts (...)`);
+    console.log("DB initialized");
+  } catch (err) {
+    console.error("DB init error:", err);
+  }
 };
+
 initDB();
 
 app.get("/posts", async (req, res) => {
