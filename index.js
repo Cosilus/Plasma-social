@@ -43,13 +43,13 @@ app.get("/posts", async (req, res) => {
 
 app.post("/posts", async (req, res) => {
   const { name, content, wallet } = req.body;
-  if (!name || !content || !wallet) return res.status(400).json({ error: "Missing fields" });
+  
+const walletValue = wallet || '';
 
-  try {
-    const result = await pool.query(
-      "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
-      [name, content, wallet]
-    );
+const result = await pool.query(
+  "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
+  [name, content, walletValue]
+);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
