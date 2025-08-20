@@ -44,6 +44,8 @@ app.get("/posts", async (req, res) => {
 app.post("/posts", async (req, res) => {
   try {
     const { name, content, wallet } = req.body;
+    const walletValue = wallet ? wallet.toString() : '';
+
 
     if (!name || !content) {
       return res.status(400).json({ error: "Missing fields" });
