@@ -19,24 +19,25 @@ const pool = new Pool({
 
 
 const initDB = async () => {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS posts (
-      id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      content TEXT NOT NULL,
-      wallet TEXT,  -- wallet peut être NULL maintenant
-      likes INT DEFAULT 0,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-     try {
-    await pool.query(`CREATE TABLE IF NOT EXISTS posts (...)`);
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        content TEXT NOT NULL,
+        wallet TEXT,
+        likes INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
     console.log("DB initialized");
   } catch (err) {
     console.error("DB init error:", err);
   }
 };
 
-initDB();
+initDB(); 
+
 
 app.get("/posts", async (req, res) => {
   try {
