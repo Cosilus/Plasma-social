@@ -17,13 +17,14 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false } 
 });
 
+
 const initDB = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS posts (
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       content TEXT NOT NULL,
-      wallet TEXT,
+      wallet TEXT,  -- wallet peut être NULL maintenant
       likes INT DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW()
     );
@@ -44,21 +45,16 @@ app.get("/posts", async (req, res) => {
 app.post("/posts", async (req, res) => {
   try {
     const { name, content, wallet } = req.body;
-    const walletValue = wallet ? wallet.toString() : '';
+const walletValue = wallet || null; 
+const result = await pool.query(
+  "INSERT INTO posts (name, content, wallet_address) VALUES ($1, $2, $3) RETURNING *",
+  [name, content, walletValue]
+);
 
-
-    if (!name || !content) {
-      return res.status(400).json({ error: "Missing fields" });
-    }
-
-    const result = await pool.query(
-      "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
-      [name, content, walletValue]
-    );
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
   }
 });
