@@ -20,8 +20,6 @@ const pool = new Pool({
 
 const initDB = async () => {
   try {
-    await pool.query(`DROP TABLE IF EXISTS posts;`);
-    await pool.query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS name TEXT NOT NULL;`);
     await pool.query(`
       CREATE TABLE IF NOT EXISTS posts (
         id SERIAL PRIMARY KEY,
