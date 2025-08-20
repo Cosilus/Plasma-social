@@ -64,9 +64,11 @@ app.post("/posts", async (req, res) => {
     );
 
     res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({ error: "Database error" });
+  } 
+  catch (err) {
+  console.error("Database error:", err.message, err.stack);
+  res.status(500).json({ error: err.message });
+}
   }
 });
 
