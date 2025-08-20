@@ -51,9 +51,6 @@ app.post("/posts", async (req, res) => {
       return res.status(400).json({ error: "Missing fields" });
     }
 
-    // wallet peut être vide si non connecté
-    const walletValue = wallet || '';
-
     const result = await pool.query(
       "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
       [name, content, walletValue]
