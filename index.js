@@ -23,7 +23,7 @@ const initDB = async () => {
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       content TEXT NOT NULL,
-      wallet TEXT NOT NULL,
+      wallet TEXT,
       likes INT DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW()
     );
@@ -42,14 +42,21 @@ app.get("/posts", async (req, res) => {
 });
 
 app.post("/posts", async (req, res) => {
-  const { name, content, wallet } = req.body;
-  
-const walletValue = wallet || '';
+  try {
+    const { name, content, wallet } = req.body;
 
-const result = await pool.query(
-  "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
-  [name, content, walletValue]
-);
+    if (!name || !content) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    // wallet peut être vide si non connecté
+    const walletValue = wallet || '';
+
+    const result = await pool.query(
+      "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
+      [name, content, walletValue]
+    );
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -86,7 +93,6 @@ app.delete("/posts/:id/like", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
