@@ -53,7 +53,7 @@ app.post("/posts", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "INSERT INTO posts (name, content, wallet_address) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
       [name, content, walletValue]
     );
     res.status(201).json(result.rows[0]);
