@@ -45,20 +45,20 @@ app.get("/posts", async (req, res) => {
 app.post("/posts", async (req, res) => {
   const { name, content, wallet } = req.body;
 
+  // Vérification des champs obligatoires
   if (!name || !content) {
     return res.status(400).json({ error: "Missing fields" });
   }
 
-  const walletValue = wallet || null; 
-
   try {
     const result = await pool.query(
       "INSERT INTO posts (name, content, wallet) VALUES ($1, $2, $3) RETURNING *",
-      [name, content, walletValue]
+      [name, content, wallet || null] // wallet peut être null
     );
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("Database error:", err);
     res.status(500).json({ error: "Database error" });
   }
 });
