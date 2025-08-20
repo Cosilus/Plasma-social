@@ -69,7 +69,6 @@ app.post("/posts", async (req, res) => {
   console.error("Database error:", err.message, err.stack);
   res.status(500).json({ error: err.message });
 }
-  }
 });
 
 
